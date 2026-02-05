@@ -8,3 +8,9 @@ venv/
 dist/
 build/
 .pytest_cache/
+
+# Internal notes
+CLAUDE.md
+spec.md
+docs/PROGRESS.md
+docs/WHAT_IS_BUILT.md
