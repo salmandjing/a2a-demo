@@ -94,7 +94,10 @@
                     </svg>
                     Agent Activity
                 </div>
-                <div class="trace-badge" id="traceBadge">Ready</div>
+                <div class="trace-controls">
+                    <button class="trace-toggle" id="jsonToggle" title="Toggle JSON view">{ }</button>
+                    <div class="trace-badge" id="traceBadge">Ready</div>
+                </div>
             </div>
 
             <div class="trace-content" id="traceContent">
@@ -103,8 +106,36 @@
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M12 6v6l4 2"/>
                     </svg>
-                    <p>Agent trace will appear here when you send a message</p>
+                    <p>Agent activity will stream here in real-time</p>
                 </div>
+            </div>
+
+            <!-- Metrics Panel -->
+            <div class="metrics-panel" id="metricsPanel" style="display: none;">
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-icon">⏱️</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricTime">--</div>
+                            <div class="metric-label">Total Time</div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon">🔤</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricTokens">--</div>
+                            <div class="metric-label">Tokens</div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-content">
+                            <div class="metric-value" id="metricCost">--</div>
+                            <div class="metric-label">Est. Cost</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timing-breakdown" id="timingBreakdown"></div>
             </div>
 
             <!-- Architecture Diagram -->
@@ -151,14 +182,33 @@
             <button class="demo-button" data-message="Yes, please fix the billing error for patient PAT-2847 and make sure my insurance gets charged correctly. I want this resolved.">
                 ✅ Approve Fix
             </button>
-            <div class="demo-step">Other scenarios (standalone)</div>
+            <div class="demo-step">Other scenarios</div>
             <button class="demo-button" data-message="Hi, I'm patient PAT-2847. Can you tell me about my insurance coverage and deductible status? I want to understand what I'll owe for future visits.">
                 🔍 Insurance Details
             </button>
             <button class="demo-button" data-message="Hi, I'm patient PAT-2847. I'd like to schedule a follow-up cardiology appointment with Dr. Patel please.">
                 📅 Book Appointment
             </button>
+            <div class="demo-step">Error handling</div>
+            <button class="demo-button error-demo" data-message="Hi, I'm patient PAT-9999. Can you look up my billing information?">
+                ⚠️ Unknown Patient
+            </button>
         </div>
+    </div>
+
+    <!-- Visual Data Card Modal -->
+    <div class="card-modal" id="cardModal" style="display: none;">
+        <div class="card-modal-content" id="cardModalContent"></div>
+        <button class="card-modal-close" id="cardModalClose">×</button>
+    </div>
+
+    <!-- JSON View Modal -->
+    <div class="json-modal" id="jsonModal" style="display: none;">
+        <div class="json-modal-header">
+            <span>Raw JSON View</span>
+            <button class="json-modal-close" id="jsonModalClose">×</button>
+        </div>
+        <pre class="json-content" id="jsonContent"></pre>
     </div>
 
     <script src="/static/app.js"></script>

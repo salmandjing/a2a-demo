@@ -55,3 +55,54 @@ A chronological log of features, fixes, and changes made to this project.
 ### Initial Documentation Setup
 - Created documentation structure with `WHAT_IS_BUILT.md`, `PROGRESS.md`, and `ARCHITECTURE.md`
 - Added `CLAUDE.md` with rules for progressive documentation updates
+
+---
+
+## 2026-02-05
+
+### Full Observability & Enhanced UX Improvements
+
+#### Agent "Thinking" Stream
+- Real-time display of agent reasoning process in trace panel
+- Shows what the orchestrator is considering before taking action
+- Purple-tinted thinking events with thought bubble (💭) icon
+- Truncates long thoughts with expandable detail view
+
+#### Visual Data Cards
+- Rich visual cards for billing, insurance, correction, and case data
+- Displays key fields in an easy-to-read grid format
+- Color-coded values: red for errors, green for success, blue for highlights
+- Cards appear inline with trace events when relevant data is extracted
+
+#### Expandable Trace Details
+- Click any trace event to expand and see raw JSON data
+- Shows full input/output for debugging and transparency
+- Helps developers understand agent tool calls
+
+#### Conversation Memory & Session Persistence
+- Backend stores conversation history per session
+- Patient context is remembered across messages (name, ID, issue type)
+- Session ID persisted between requests
+- Reset button properly clears server-side session
+
+#### Timing Breakdown & Metrics Panel
+- Visual timing bar showing time spent in each agent
+- Color-coded segments: purple (Orchestrator), orange (ServiceNow), cyan (Salesforce)
+- Token count display (input + output)
+- Estimated cost calculation based on Claude pricing
+
+#### JSON View Toggle
+- `{ }` button in trace header to view raw JSON of all events
+- Modal overlay with syntax-highlighted JSON
+- Useful for debugging and demo presentations
+
+#### Error Scenario Demo
+- Added "Unknown Patient" demo button (PAT-9999)
+- Tests graceful error handling when data doesn't exist
+- Yellow-styled button to indicate error scenario
+
+### Files Updated
+- `server.py`: Major rewrite with ConversationSession, TraceCollector, visual data extraction
+- `frontend/index.html`: Added metrics panel, JSON modal, error demo button
+- `frontend/styles.css`: Styles for thinking events, visual cards, metrics, modals
+- `frontend/app.js`: Handlers for all new features (metrics, cards, JSON toggle, session)

@@ -14,6 +14,7 @@
     --border-color: #e5e7eb;
     --success-color: #10b981;
     --warning-color: #f59e0b;
+    --error-color: #ef4444;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
 
@@ -21,6 +22,7 @@
     --orchestrator-color: #8b5cf6;
     --servicenow-color: #f97316;
     --salesforce-color: #06b6d4;
+    --thinking-color: #a855f7;
 }
 
 body {
@@ -251,7 +253,7 @@ textarea {
 
 /* Trace Panel */
 .trace-panel {
-    width: 380px;
+    width: 400px;
     background: var(--white);
     border-left: 1px solid var(--border-color);
     display: flex;
@@ -275,6 +277,32 @@ textarea {
     gap: 8px;
     font-weight: 600;
     font-size: 15px;
+}
+
+.trace-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trace-toggle {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.trace-toggle:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.trace-toggle.active {
+    background: rgba(255,255,255,0.4);
 }
 
 .trace-badge {
@@ -328,18 +356,30 @@ textarea {
     animation: slideIn 0.3s ease;
     border-left: 4px solid var(--border-color);
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.trace-event:hover {
+    background: var(--bg-color);
 }
 
 .trace-event.orchestrator { border-left-color: var(--orchestrator-color); }
 .trace-event.servicenow { border-left-color: var(--servicenow-color); }
 .trace-event.salesforce { border-left-color: var(--salesforce-color); }
+.trace-event.thinking { border-left-color: var(--thinking-color); background: #faf5ff; }
 
 .trace-event.running {
     background: linear-gradient(90deg, var(--white) 0%, #fafafa 100%);
 }
 
 .trace-event.complete {
+    opacity: 0.9;
+}
+
+.trace-event.info {
     opacity: 0.85;
+    background: #faf5ff;
 }
 
 @keyframes slideIn {
@@ -359,12 +399,16 @@ textarea {
     flex-shrink: 0;
 }
 
+.trace-event.thinking .trace-icon {
+    background: #ede9fe;
+}
+
 .trace-body {
     flex: 1;
     min-width: 0;
 }
 
-.trace-header {
+.trace-event-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -380,6 +424,7 @@ textarea {
 .trace-event.orchestrator .trace-agent { color: var(--orchestrator-color); }
 .trace-event.servicenow .trace-agent { color: var(--servicenow-color); }
 .trace-event.salesforce .trace-agent { color: var(--salesforce-color); }
+.trace-event.thinking .trace-agent { color: var(--thinking-color); }
 
 .trace-time {
     font-size: 11px;
@@ -387,7 +432,7 @@ textarea {
     font-family: 'SF Mono', Monaco, monospace;
 }
 
-.trace-title {
+.trace-event-title {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-color);
@@ -423,6 +468,34 @@ textarea {
     font-weight: 600;
 }
 
+.trace-status.info {
+    background: #ede9fe;
+    color: var(--thinking-color);
+}
+
+/* Expandable trace detail */
+.trace-expand-indicator {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.trace-expanded-content {
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--bg-color);
+    border-radius: 6px;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 11px;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.trace-event.expanded .trace-expanded-content {
+    display: block;
+}
+
 /* Spinner */
 .spinner {
     width: 14px;
@@ -436,6 +509,97 @@ textarea {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* Metrics Panel */
+.metrics-panel {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-color);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.metric-icon {
+    font-size: 18px;
+}
+
+.metric-content {
+    min-width: 0;
+}
+
+.metric-value {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-color);
+    font-family: 'SF Mono', Monaco, monospace;
+}
+
+.metric-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.timing-breakdown {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.timing-bar {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.timing-segment {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.timing-segment.orchestrator { background: var(--orchestrator-color); }
+.timing-segment.servicenow { background: var(--servicenow-color); }
+.timing-segment.salesforce { background: var(--salesforce-color); }
+
+.timing-legend {
+    display: flex;
+    justify-content: space-around;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.timing-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.timing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.timing-dot.orchestrator { background: var(--orchestrator-color); }
+.timing-dot.servicenow { background: var(--servicenow-color); }
+.timing-dot.salesforce { background: var(--salesforce-color); }
 
 /* Architecture Diagram */
 .architecture-section {
@@ -609,6 +773,98 @@ textarea {
     transform: translateX(2px);
 }
 
+.demo-button.error-demo {
+    border-color: var(--warning-color);
+    background: #fffbeb;
+}
+
+.demo-button.error-demo:hover {
+    background: #fef3c7;
+    border-color: var(--warning-color);
+}
+
+/* Visual Data Cards */
+.visual-card {
+    margin-top: 8px;
+    padding: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.visual-card.billing {
+    border-left: 4px solid var(--servicenow-color);
+}
+
+.visual-card.insurance {
+    border-left: 4px solid var(--salesforce-color);
+}
+
+.visual-card.correction {
+    border-left: 4px solid var(--success-color);
+}
+
+.visual-card.case {
+    border-left: 4px solid var(--orchestrator-color);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.card-type {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.card-id {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--white);
+    border-radius: 4px;
+    color: var(--text-color);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.card-field {
+    font-size: 11px;
+}
+
+.card-label {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.card-value {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.card-value.error {
+    color: var(--error-color);
+}
+
+.card-value.success {
+    color: var(--success-color);
+}
+
+.card-value.highlight {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 /* Code formatting */
 .message-content code {
     background: var(--bg-color);
@@ -617,6 +873,85 @@ textarea {
     font-size: 12px;
     font-family: 'SF Mono', Monaco, monospace;
     color: var(--orchestrator-color);
+}
+
+/* Modals */
+.card-modal, .json-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.card-modal-content {
+    background: var(--white);
+    padding: 24px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+}
+
+.card-modal-close, .json-modal-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--white);
+    box-shadow: var(--shadow);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.json-modal {
+    flex-direction: column;
+    padding: 40px;
+}
+
+.json-modal-header {
+    background: #1e293b;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.json-modal-header .json-modal-close {
+    position: static;
+    background: transparent;
+    color: white;
+    box-shadow: none;
+}
+
+.json-content {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 20px;
+    border-radius: 0 0 12px 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 400px;
+    overflow: auto;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 /* Responsive */
