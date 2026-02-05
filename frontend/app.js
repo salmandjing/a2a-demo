@@ -1,132 +1,121 @@
-// MidAtlantic Health - AI Healthcare Assistant
-// Real-time multi-agent orchestration with full observability
+// Multi-Agent Healthcare Demo
+// Clean implementation with proper card rendering
 
 const $ = id => document.getElementById(id);
 
 // Elements
-const chatMessages = $('chatMessages');
-const messageInput = $('messageInput');
-const sendButton = $('sendButton');
-const chatStatus = $('chatStatus');
-const traceContent = $('traceContent');
-const resetButton = $('resetButton');
-const metricsPanel = $('metricsPanel');
-const jsonToggle = $('jsonToggle');
+const chatArea = $('chatArea');
+const msgInput = $('msgInput');
+const sendBtn = $('sendBtn');
+const resetBtn = $('resetBtn');
+const jsonBtn = $('jsonBtn');
 const jsonModal = $('jsonModal');
-const jsonModalClose = $('jsonModalClose');
-const jsonContent = $('jsonContent');
-const typingTemplate = $('typingTemplate');
+const modalClose = $('modalClose');
+const jsonCode = $('jsonCode');
+const traceList = $('traceList');
+const traceStatus = $('traceStatus');
+const metricsSection = $('metricsSection');
+const mTime = $('mTime');
+const mTokens = $('mTokens');
+const mCost = $('mCost');
+const timingVisual = $('timingVisual');
 
-// Metrics
-const metricTime = $('metricTime');
-const metricTokens = $('metricTokens');
-const metricCost = $('metricCost');
-const timingBar = $('timingBar');
-
-// Architecture
-const archOrchestrator = $('archOrchestrator');
-const archServicenow = $('archServicenow');
-const archSalesforce = $('archSalesforce');
-const archLine1 = $('archLine1');
-const archLine2 = $('archLine2');
+// Agents
+const agentOrch = $('agentOrch');
+const agentSN = $('agentSN');
+const agentSF = $('agentSF');
+const line1 = $('line1');
+const line2 = $('line2');
 
 // State
 let sessionId = null;
-let isProcessing = false;
-let allTraceEvents = [];
+let processing = false;
+let traces = [];
 
-// ═══════════════════════════════════════════════════════════════
-// Initialization
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// Event Listeners
+// ══════════════════════════════════════════════════════════════
 
-// Reset button
-resetButton?.addEventListener('click', async () => {
-    if (isProcessing) return;
-
+resetBtn.addEventListener('click', async () => {
+    if (processing) return;
     if (sessionId) {
         try { await fetch(`/api/session/${sessionId}`, { method: 'DELETE' }); } catch {}
     }
-
     sessionId = null;
-    allTraceEvents = [];
-
-    chatMessages.innerHTML = getWelcomeMessage();
-    traceContent.innerHTML = getEmptyTrace();
-    metricsPanel.style.display = 'none';
-    setStatus('Ready', false);
-    resetArch();
-    messageInput.value = '';
-    messageInput.focus();
+    traces = [];
+    chatArea.innerHTML = welcomeHTML();
+    traceList.innerHTML = emptyTraceHTML();
+    metricsSection.style.display = 'none';
+    setStatus('Idle', false);
+    clearAgents();
+    msgInput.value = '';
+    msgInput.focus();
 });
 
-// JSON modal
-jsonToggle?.addEventListener('click', () => {
-    if (allTraceEvents.length === 0) return;
-    jsonContent.textContent = JSON.stringify(allTraceEvents, null, 2);
+jsonBtn.addEventListener('click', () => {
+    if (traces.length === 0) return;
+    jsonCode.textContent = JSON.stringify(traces, null, 2);
     jsonModal.classList.add('open');
 });
 
-jsonModalClose?.addEventListener('click', () => jsonModal.classList.remove('open'));
-jsonModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => jsonModal.classList.remove('open'));
+modalClose.addEventListener('click', () => jsonModal.classList.remove('open'));
+jsonModal.querySelector('.modal-overlay').addEventListener('click', () => jsonModal.classList.remove('open'));
 
-// Input handling
-messageInput?.addEventListener('input', () => {
-    messageInput.style.height = 'auto';
-    messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-    sendButton.disabled = !messageInput.value.trim() || isProcessing;
+msgInput.addEventListener('input', () => {
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+    sendBtn.disabled = !msgInput.value.trim() || processing;
 });
 
-messageInput?.addEventListener('keydown', e => {
+msgInput.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        if (!sendButton.disabled) sendMessage();
+        if (!sendBtn.disabled) send();
     }
 });
 
-sendButton?.addEventListener('click', sendMessage);
+sendBtn.addEventListener('click', send);
 
-// Nav items (demo scenarios)
-document.querySelectorAll('.nav-item[data-message]').forEach(item => {
-    item.addEventListener('click', () => {
-        if (isProcessing) return;
-        messageInput.value = item.dataset.message;
-        messageInput.dispatchEvent(new Event('input'));
-        sendMessage();
+document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (processing) return;
+        msgInput.value = btn.dataset.msg;
+        msgInput.dispatchEvent(new Event('input'));
+        send();
     });
 });
 
-// ═══════════════════════════════════════════════════════════════
-// Chat Functions
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// Send Message
+// ══════════════════════════════════════════════════════════════
 
-async function sendMessage() {
-    const message = messageInput.value.trim();
-    if (!message || isProcessing) return;
+async function send() {
+    const msg = msgInput.value.trim();
+    if (!msg || processing) return;
 
-    isProcessing = true;
-    sendButton.disabled = true;
+    processing = true;
+    sendBtn.disabled = true;
 
-    addMessage(message, 'user');
-    messageInput.value = '';
-    messageInput.style.height = 'auto';
+    addMsg(msg, 'user');
+    msgInput.value = '';
+    msgInput.style.height = 'auto';
 
     showTyping();
     setStatus('Processing', true);
 
-    // Clear trace
-    traceContent.innerHTML = '';
-    allTraceEvents = [];
-    metricsPanel.style.display = 'none';
-    highlightArch('orchestrator');
+    traceList.innerHTML = '';
+    traces = [];
+    metricsSection.style.display = 'none';
+    activateAgent('orch');
 
     try {
-        const response = await fetch('/api/chat/stream', {
+        const res = await fetch('/api/chat/stream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, session_id: sessionId })
+            body: JSON.stringify({ message: msg, session_id: sessionId })
         });
 
-        const reader = response.body.getReader();
+        const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
 
@@ -141,312 +130,295 @@ async function sendMessage() {
             for (const line of lines) {
                 if (line.startsWith('data: ')) {
                     try {
-                        handleEvent(JSON.parse(line.slice(6)));
+                        handleSSE(JSON.parse(line.slice(6)));
                     } catch {}
                 }
             }
         }
-    } catch (error) {
-        console.error('Stream error:', error);
+    } catch (err) {
+        console.error(err);
         hideTyping();
-        addMessage('I apologize, but I encountered an error. Please try again.', 'assistant');
+        addMsg('Sorry, something went wrong. Please try again.', 'assistant');
         setStatus('Error', false);
     }
 
-    resetArch();
-    isProcessing = false;
-    sendButton.disabled = !messageInput.value.trim();
+    setTimeout(clearAgents, 1500);
+    processing = false;
+    sendBtn.disabled = !msgInput.value.trim();
 }
 
-function handleEvent(data) {
+function handleSSE(data) {
     switch (data.type) {
         case 'trace':
-            allTraceEvents.push(data.event);
-            addTraceEvent(data.event);
+            traces.push(data.event);
+            addTrace(data.event);
             break;
         case 'metrics':
             showMetrics(data.data);
             break;
         case 'response':
             hideTyping();
-            addMessage(data.text, 'assistant');
+            addMsg(data.text, 'assistant');
             if (data.session_id) sessionId = data.session_id;
             setStatus('Complete', false);
             break;
         case 'error':
             hideTyping();
-            addMessage('Error: ' + data.message, 'assistant');
+            addMsg('Error: ' + data.message, 'assistant');
             setStatus('Error', false);
             break;
     }
 }
 
-function addMessage(content, role) {
+// ══════════════════════════════════════════════════════════════
+// Chat
+// ══════════════════════════════════════════════════════════════
+
+function addMsg(text, role) {
     const div = document.createElement('div');
-    div.className = `message ${role}`;
-
-    if (role === 'assistant') {
-        div.innerHTML = `
-            <div class="message-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                </svg>
-            </div>
-            <div class="message-content">
-                <div class="message-header">Health Assistant</div>
-                <div class="message-text">${formatContent(content)}</div>
-            </div>
-        `;
-    } else {
-        div.innerHTML = `
-            <div class="message-avatar"></div>
-            <div class="message-content">
-                <div class="message-text">${escapeHtml(content)}</div>
-            </div>
-        `;
-    }
-
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    div.className = `msg msg-${role}`;
+    div.innerHTML = `<div class="msg-bubble">${role === 'assistant' ? format(text) : esc(text)}</div>`;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-function formatContent(text) {
+function format(text) {
     return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>')
         .replace(/^- (.*?)(<br>|$)/gm, '<li>$1</li>')
         .replace(/((?:CORR|CASE|TKT|BILL)-[A-Z0-9]+)/g, '<code>$1</code>')
         .replace(/(<li>.*<\/li>)+/gs, '<ul>$&</ul>')
-        .replace(/^(?!<)/, '<p>')
-        .replace(/(?<!>)$/, '</p>');
+        .replace(/^(?!<)/, '<p>').replace(/(?<!>)$/, '</p>');
 }
 
 function showTyping() {
-    const clone = typingTemplate.content.cloneNode(true);
-    chatMessages.appendChild(clone);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    const div = document.createElement('div');
+    div.className = 'msg msg-assistant msg-typing';
+    div.id = 'typingMsg';
+    div.innerHTML = `<div class="msg-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;
+    chatArea.appendChild(div);
+    chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function hideTyping() {
-    chatMessages.querySelector('.typing-message')?.remove();
+    $('typingMsg')?.remove();
 }
 
-function setStatus(text, processing) {
-    chatStatus.querySelector('.status-text').textContent = text;
-    chatStatus.classList.toggle('processing', processing);
-}
+// ══════════════════════════════════════════════════════════════
+// Trace
+// ══════════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════════
-// Trace Functions
-// ═══════════════════════════════════════════════════════════════
+function addTrace(ev) {
+    let cls = 'orch';
+    if (ev.agent?.toLowerCase().includes('servicenow')) cls = 'sn';
+    if (ev.agent?.toLowerCase().includes('salesforce')) cls = 'sf';
+    if (ev.type === 'thinking') cls = 'think';
 
-function addTraceEvent(event) {
-    let agentClass = 'orchestrator';
-    if (event.agent?.toLowerCase().includes('servicenow')) agentClass = 'servicenow';
-    if (event.agent?.toLowerCase().includes('salesforce')) agentClass = 'salesforce';
-    if (event.type === 'thinking') agentClass = 'thinking';
+    if (cls !== 'think') activateAgent(cls);
 
-    const isComplete = event.status === 'complete';
-    const isThinking = event.type === 'thinking';
-
-    if (!isThinking) highlightArch(agentClass);
+    const done = ev.status === 'complete';
+    const thinking = ev.type === 'thinking';
 
     const div = document.createElement('div');
-    div.className = `trace-event ${agentClass}`;
-
+    div.className = `trace-item ${cls}`;
     div.innerHTML = `
-        <div class="trace-icon">${event.icon}</div>
-        <div class="trace-body-content">
-            <div class="trace-event-header">
-                <span class="trace-agent">${event.agent}</span>
-                <span class="trace-time">${event.timestamp}s</span>
-            </div>
-            <div class="trace-event-title">${escapeHtml(event.title)}</div>
-            ${event.detail ? `<div class="trace-detail">${escapeHtml(event.detail)}</div>` : ''}
-            ${event.data?.visual ? renderCard(event.data.visual) : ''}
-            ${event.data ? `<div class="trace-expanded">${JSON.stringify(event.data, null, 2)}</div>` : ''}
+        <div class="trace-top">
+            <span class="trace-agent">${ev.agent}</span>
+            <span class="trace-time">${ev.timestamp}s</span>
         </div>
-        <div class="trace-status ${isComplete ? 'complete' : ''}">
-            ${isComplete ? '✓' : isThinking ? '💭' : '<div class="spinner"></div>'}
+        <div class="trace-title">
+            ${esc(ev.title)}
+            ${done ? '<span class="trace-check">✓</span>' : thinking ? '' : '<span class="trace-spinner"></span>'}
         </div>
+        ${ev.detail ? `<div class="trace-detail">${esc(ev.detail)}</div>` : ''}
+        ${ev.data?.visual ? card(ev.data.visual) : ''}
     `;
 
-    if (event.data) {
-        div.addEventListener('click', () => div.classList.toggle('expanded'));
-    }
+    traceList.appendChild(div);
+    traceList.scrollTop = traceList.scrollHeight;
 
-    traceContent.appendChild(div);
-    traceContent.scrollTop = traceContent.scrollHeight;
-
-    // Update running events to complete
-    if (event.type?.includes('end')) {
-        traceContent.querySelectorAll(`.trace-event.${agentClass}:not(.expanded)`).forEach(el => {
-            const status = el.querySelector('.trace-status');
-            if (status && !status.classList.contains('complete')) {
-                status.classList.add('complete');
-                status.innerHTML = '✓';
-            }
+    // Mark previous items as complete
+    if (ev.type?.includes('end')) {
+        traceList.querySelectorAll(`.trace-item.${cls} .trace-spinner`).forEach(s => {
+            s.outerHTML = '<span class="trace-check">✓</span>';
         });
     }
 }
 
-function renderCard(visual) {
-    if (!visual) return '';
+function card(v) {
+    if (!v) return '';
 
-    const templates = {
+    const tpl = {
         billing: `
-            <div class="card-header">
-                <span class="card-type">Billing Record</span>
-                <span class="card-id">${visual.bill_id || ''}</span>
+            <div class="card-head">
+                <span class="card-badge billing">Billing Issue</span>
+                <span class="card-id">${v.bill_id||''}</span>
             </div>
             <div class="card-grid">
-                <div class="card-field"><div class="card-label">Charged</div><div class="card-value error">${visual.amount}</div></div>
-                <div class="card-field"><div class="card-label">Correct</div><div class="card-value success">${visual.correct_amount}</div></div>
-                <div class="card-field"><div class="card-label">Code</div><div class="card-value">${visual.procedure_code}</div></div>
-                <div class="card-field"><div class="card-label">Should Be</div><div class="card-value highlight">${visual.correct_code}</div></div>
-            </div>
-        `,
+                <div class="card-stat">
+                    <span class="stat-label">Billed Amount</span>
+                    <span class="stat-value error">${v.amount}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Correct Amount</span>
+                    <span class="stat-value success">${v.correct_amount}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Code Used</span>
+                    <span class="stat-value mono">${v.procedure_code}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Correct Code</span>
+                    <span class="stat-value accent mono">${v.correct_code}</span>
+                </div>
+            </div>`,
         insurance: `
-            <div class="card-header">
-                <span class="card-type">Insurance</span>
-                <span class="card-id">${visual.plan}</span>
+            <div class="card-head">
+                <span class="card-badge insurance">Insurance</span>
+                <span class="card-id">${v.plan}</span>
             </div>
             <div class="card-grid">
-                <div class="card-field"><div class="card-label">Carrier</div><div class="card-value">${visual.carrier}</div></div>
-                <div class="card-field"><div class="card-label">Status</div><div class="card-value success">${visual.status}</div></div>
-                <div class="card-field"><div class="card-label">Coverage</div><div class="card-value highlight">${visual.coverage_rate}</div></div>
-                <div class="card-field"><div class="card-label">Deductible</div><div class="card-value success">${visual.deductible_met ? 'Met' : 'Not Met'}</div></div>
-            </div>
-        `,
+                <div class="card-stat">
+                    <span class="stat-label">Carrier</span>
+                    <span class="stat-value">${v.carrier}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value success">${v.status}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Coverage Rate</span>
+                    <span class="stat-value accent">${v.coverage_rate}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Deductible</span>
+                    <span class="stat-value ${v.deductible_met ? 'success' : 'warning'}">${v.deductible_met ? 'Met' : 'Not Met'}</span>
+                </div>
+            </div>`,
         correction: `
-            <div class="card-header">
-                <span class="card-type">Correction</span>
-                <span class="card-id">${visual.correction_id}</span>
+            <div class="card-head">
+                <span class="card-badge correction">Correction</span>
+                <span class="card-id">${v.correction_id}</span>
             </div>
             <div class="card-grid">
-                <div class="card-field"><div class="card-label">Original</div><div class="card-value error">${visual.original_amount}</div></div>
-                <div class="card-field"><div class="card-label">Corrected</div><div class="card-value success">${visual.corrected_amount}</div></div>
-                <div class="card-field"><div class="card-label">Savings</div><div class="card-value highlight">${visual.savings}</div></div>
-                <div class="card-field"><div class="card-label">Timeline</div><div class="card-value">${visual.timeline}</div></div>
-            </div>
-        `,
+                <div class="card-stat">
+                    <span class="stat-label">Original</span>
+                    <span class="stat-value error">${v.original_amount}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Corrected</span>
+                    <span class="stat-value success">${v.corrected_amount}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">You Save</span>
+                    <span class="stat-value accent">${v.savings}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Timeline</span>
+                    <span class="stat-value">${v.timeline}</span>
+                </div>
+            </div>`,
         case: `
-            <div class="card-header">
-                <span class="card-type">Case</span>
-                <span class="card-id">${visual.case_id}</span>
+            <div class="card-head">
+                <span class="card-badge case">Support Case</span>
+                <span class="card-id">${v.case_id}</span>
             </div>
-            <div class="card-grid">
-                <div class="card-field"><div class="card-label">Status</div><div class="card-value highlight">${visual.status}</div></div>
-                <div class="card-field"><div class="card-label">Priority</div><div class="card-value">${visual.priority}</div></div>
-            </div>
-        `
+            <div class="card-grid cols-3">
+                <div class="card-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value accent">${v.status}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Priority</span>
+                    <span class="stat-value ${v.priority === 'High' ? 'error' : ''}">${v.priority}</span>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-label">Assigned To</span>
+                    <span class="stat-value">${v.team}</span>
+                </div>
+            </div>`
     };
 
-    return templates[visual.type] ? `<div class="visual-card">${templates[visual.type]}</div>` : '';
+    return tpl[v.type] ? `<div class="data-card ${v.type}">${tpl[v.type]}</div>` : '';
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 // Metrics
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
-function showMetrics(metrics) {
-    metricsPanel.style.display = 'flex';
+function showMetrics(m) {
+    metricsSection.style.display = 'block';
+    mTime.textContent = `${m.total_time}s`;
+    mTokens.textContent = m.tokens.input + m.tokens.output;
+    mCost.textContent = `$${m.estimated_cost.toFixed(4)}`;
 
-    metricTime.textContent = `${metrics.total_time}s`;
-    metricTokens.textContent = metrics.tokens.input + metrics.tokens.output;
-    metricCost.textContent = `$${metrics.estimated_cost.toFixed(4)}`;
+    const t = m.timings || {};
+    const total = m.total_time || 1;
+    const pOrch = ((t.orchestrator || 0) / total * 100).toFixed(0);
+    const pSN = ((t.servicenow || 0) / total * 100).toFixed(0);
+    const pSF = ((t.salesforce || 0) / total * 100).toFixed(0);
 
-    const t = metrics.timings || {};
-    const total = metrics.total_time || 1;
-
-    timingBar.innerHTML = `
-        <div class="timing-bar-inner">
-            <div class="timing-segment orchestrator" style="width: ${((t.orchestrator || 0) / total * 100).toFixed(0)}%"></div>
-            <div class="timing-segment servicenow" style="width: ${((t.servicenow || 0) / total * 100).toFixed(0)}%"></div>
-            <div class="timing-segment salesforce" style="width: ${((t.salesforce || 0) / total * 100).toFixed(0)}%"></div>
-        </div>
+    timingVisual.innerHTML = `
+        <div class="timing-seg orch" style="width:${pOrch}%"></div>
+        <div class="timing-seg sn" style="width:${pSN}%"></div>
+        <div class="timing-seg sf" style="width:${pSF}%"></div>
     `;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Architecture Diagram
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// Agents
+// ══════════════════════════════════════════════════════════════
 
-function highlightArch(agent) {
-    [archOrchestrator, archServicenow, archSalesforce].forEach(n => n?.classList.remove('active'));
-    [archLine1, archLine2].forEach(l => l?.classList.remove('active'));
+function activateAgent(which) {
+    [agentOrch, agentSN, agentSF].forEach(a => a?.classList.remove('active'));
+    [line1, line2].forEach(l => l?.classList.remove('active'));
 
-    switch (agent) {
-        case 'orchestrator':
-            archOrchestrator?.classList.add('active');
-            break;
-        case 'servicenow':
-            archServicenow?.classList.add('active');
-            archLine1?.classList.add('active');
-            break;
-        case 'salesforce':
-            archSalesforce?.classList.add('active');
-            archLine2?.classList.add('active');
-            break;
+    switch (which) {
+        case 'orch': agentOrch?.classList.add('active'); break;
+        case 'sn': agentSN?.classList.add('active'); line1?.classList.add('active'); break;
+        case 'sf': agentSF?.classList.add('active'); line2?.classList.add('active'); break;
     }
 }
 
-function resetArch() {
-    setTimeout(() => {
-        [archOrchestrator, archServicenow, archSalesforce].forEach(n => n?.classList.remove('active'));
-        [archLine1, archLine2].forEach(l => l?.classList.remove('active'));
-    }, 1500);
+function clearAgents() {
+    [agentOrch, agentSN, agentSF].forEach(a => a?.classList.remove('active'));
+    [line1, line2].forEach(l => l?.classList.remove('active'));
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Utilities
-// ═══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// Helpers
+// ══════════════════════════════════════════════════════════════
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+function setStatus(txt, active) {
+    traceStatus.querySelector('.status-text').textContent = txt;
+    traceStatus.classList.toggle('active', active);
 }
 
-function getWelcomeMessage() {
-    return `
-        <div class="message assistant">
-            <div class="message-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                </svg>
-            </div>
-            <div class="message-content">
-                <div class="message-header">Health Assistant</div>
-                <div class="message-text">
-                    <p>Hello! I'm your MidAtlantic Health virtual assistant. I can help you with:</p>
-                    <ul>
-                        <li><strong>Billing questions</strong> - Review charges, dispute errors, request corrections</li>
-                        <li><strong>Insurance verification</strong> - Check coverage, deductibles, and benefits</li>
-                        <li><strong>Appointments</strong> - Schedule, reschedule, or cancel visits</li>
-                    </ul>
-                    <p>How can I assist you today?</p>
-                </div>
-            </div>
-        </div>
-    `;
+function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
 }
 
-function getEmptyTrace() {
-    return `
-        <div class="trace-empty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-            </svg>
-            <p>Agent activity will appear here</p>
-        </div>
-    `;
+function welcomeHTML() {
+    return `<div class="msg msg-assistant"><div class="msg-bubble">
+        <p><strong>Welcome to MidAtlantic Health!</strong></p>
+        <p>I'm your AI assistant. I can help with:</p>
+        <ul><li>Billing questions & disputes</li><li>Insurance verification</li><li>Appointment scheduling</li></ul>
+        <p>Try the demo scenarios on the left, or type your own question.</p>
+    </div></div>`;
 }
 
-// Focus input on load
-messageInput?.focus();
+function emptyTraceHTML() {
+    return `<div class="trace-empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <p>Agent activity will appear here</p>
+        <p class="empty-hint">Click a demo scenario to start</p>
+    </div>`;
+}
+
+// Init
+msgInput.focus();
