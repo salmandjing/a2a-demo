@@ -1,0 +1,61 @@
+{
+  "bills": {
+    "PAT-2847": [
+      {
+        "bill_id": "BILL-90421",
+        "patient_id": "PAT-2847",
+        "date_of_service": "2026-01-15",
+        "provider": "Dr. Raj Patel, MD — Cardiology",
+        "facility": "MidAtlantic Health — Main Campus",
+        "procedure_code": "99214",
+        "procedure_description": "Office/outpatient visit, established patient, moderate complexity",
+        "billed_amount": 2400.00,
+        "insurance_applied": false,
+        "insurance_rejection_reason": "MODIFIER_MISSING",
+        "error_flags": ["MODIFIER_MISSING", "INSURANCE_NOT_APPLIED"],
+        "correct_code": "99214-25",
+        "modifier_description": "Modifier -25: Significant, separately identifiable E&M service by the same physician on the same day of another procedure",
+        "expected_insurance_payment": 2160.00,
+        "expected_patient_responsibility": 240.00,
+        "status": "disputed",
+        "created_date": "2026-01-20",
+        "due_date": "2026-02-20",
+        "account_number": "ACCT-7291"
+      }
+    ]
+  },
+  "tickets": {
+    "PAT-2847": []
+  },
+  "appointments": {
+    "available_slots": [
+      {
+        "slot_id": "SLOT-001",
+        "department": "Cardiology",
+        "provider": "Dr. Raj Patel, MD",
+        "facility": "MidAtlantic Health — Main Campus",
+        "date": "2026-02-12",
+        "time": "10:30 AM",
+        "duration_minutes": 30
+      },
+      {
+        "slot_id": "SLOT-002",
+        "department": "Cardiology",
+        "provider": "Dr. Raj Patel, MD",
+        "facility": "MidAtlantic Health — Main Campus",
+        "date": "2026-02-14",
+        "time": "2:00 PM",
+        "duration_minutes": 30
+      },
+      {
+        "slot_id": "SLOT-003",
+        "department": "Cardiology",
+        "provider": "Dr. Lisa Chen, MD",
+        "facility": "MidAtlantic Health — East Wing",
+        "date": "2026-02-10",
+        "time": "9:00 AM",
+        "duration_minutes": 30
+      }
+    ]
+  }
+}

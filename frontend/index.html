@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MidAtlantic Health - Virtual Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Main Chat Area -->
+        <div class="app-container">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="14" stroke="#0066cc" stroke-width="2" fill="#e6f0ff"/>
+                        <path d="M16 8v16M8 16h16" stroke="#0066cc" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>MidAtlantic Health</span>
+                </div>
+                <div class="header-subtitle">Virtual Patient Assistant</div>
+            </header>
+
+            <!-- Chat Container -->
+            <main class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome message -->
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" fill="#0066cc"/>
+                                <path d="M12 6v12M6 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm your MidAtlantic Health virtual assistant. I can help you with:</p>
+                            <ul>
+                                <li>Billing questions and disputes</li>
+                                <li>Insurance verification</li>
+                                <li>Appointment scheduling</li>
+                            </ul>
+                            <p>How can I assist you today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" fill="#0066cc"/>
+                                <path d="M12 6v12M6 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="message-content typing">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Input Area -->
+            <footer class="input-area">
+                <div class="input-container">
+                    <textarea
+                        id="messageInput"
+                        placeholder="Type your message here..."
+                        rows="1"
+                        autofocus
+                    ></textarea>
+                    <button id="sendButton" class="send-button" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="input-hint">
+                    Try: "My patient ID is PAT-2847. I received a bill for $2,400 from a cardiology visit."
+                </div>
+            </footer>
+        </div>
+
+        <!-- Trace Panel -->
+        <div class="trace-panel" id="tracePanel">
+            <div class="trace-header">
+                <div class="trace-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20V10M18 20V4M6 20v-4"/>
+                    </svg>
+                    Agent Activity
+                </div>
+                <div class="trace-badge" id="traceBadge">Ready</div>
+            </div>
+
+            <div class="trace-content" id="traceContent">
+                <div class="trace-empty">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    <p>Agent trace will appear here when you send a message</p>
+                </div>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="architecture-section">
+                <div class="arch-title">Architecture</div>
+                <div class="arch-diagram">
+                    <div class="arch-node orchestrator" id="archOrchestrator">
+                        <div class="arch-icon">🎯</div>
+                        <div class="arch-label">Orchestrator</div>
+                    </div>
+                    <div class="arch-connections">
+                        <div class="arch-line" id="archLine1"></div>
+                        <div class="arch-line" id="archLine2"></div>
+                    </div>
+                    <div class="arch-agents">
+                        <div class="arch-node servicenow" id="archServicenow">
+                            <div class="arch-icon">🔧</div>
+                            <div class="arch-label">ServiceNow</div>
+                            <div class="arch-desc">Billing & Tickets</div>
+                        </div>
+                        <div class="arch-node salesforce" id="archSalesforce">
+                            <div class="arch-icon">👤</div>
+                            <div class="arch-label">Salesforce</div>
+                            <div class="arch-desc">Patient & Insurance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Panel -->
+        <div class="demo-panel">
+            <div class="demo-header">
+                <div class="demo-title">Demo Scenarios</div>
+                <button class="reset-button" id="resetButton" title="Reset conversation">
+                    ↻ Reset
+                </button>
+            </div>
+            <div class="demo-step">Step 1: Start here</div>
+            <button class="demo-button primary" data-message="Hi, I'm Maria Santos and my patient ID is PAT-2847. I just got a bill for $2,400 for my cardiology visit with Dr. Patel on January 15th. This seems way too high - I have good insurance through Blue Cross. Can you look into this?">
+                🎯 Billing Dispute
+            </button>
+            <div class="demo-step">Step 2: After investigation</div>
+            <button class="demo-button" data-message="Yes, please fix the billing error for patient PAT-2847 and make sure my insurance gets charged correctly. I want this resolved.">
+                ✅ Approve Fix
+            </button>
+            <div class="demo-step">Other scenarios (standalone)</div>
+            <button class="demo-button" data-message="Hi, I'm patient PAT-2847. Can you tell me about my insurance coverage and deductible status? I want to understand what I'll owe for future visits.">
+                🔍 Insurance Details
+            </button>
+            <button class="demo-button" data-message="Hi, I'm patient PAT-2847. I'd like to schedule a follow-up cardiology appointment with Dr. Patel please.">
+                📅 Book Appointment
+            </button>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

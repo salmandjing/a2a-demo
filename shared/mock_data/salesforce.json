@@ -1,0 +1,86 @@
+{
+  "patients": {
+    "PAT-2847": {
+      "patient_id": "PAT-2847",
+      "first_name": "Maria",
+      "last_name": "Santos",
+      "date_of_birth": "1985-03-22",
+      "gender": "Female",
+      "phone": "(215) 555-0187",
+      "email": "maria.santos@email.com",
+      "address": "1247 Elm Street, Philadelphia, PA 19103",
+      "primary_care_provider": "Dr. Sarah Kim, MD — Internal Medicine",
+      "preferred_language": "English",
+      "communication_preference": "email",
+      "emergency_contact": "Carlos Santos — (215) 555-0192"
+    }
+  },
+  "insurance": {
+    "PAT-2847": {
+      "patient_id": "PAT-2847",
+      "carrier": "Blue Cross Blue Shield",
+      "plan_name": "BCBS PPO",
+      "policy_number": "BCBS-PA-9928471",
+      "group_number": "GRP-44102",
+      "subscriber": "Maria Santos",
+      "relationship": "Self",
+      "effective_date": "2025-01-01",
+      "termination_date": null,
+      "status": "active",
+      "coverage": {
+        "cardiology": {
+          "covered": true,
+          "coverage_rate": 0.90,
+          "copay_specialist": 40.00,
+          "pre_auth_required": false
+        },
+        "primary_care": {
+          "covered": true,
+          "coverage_rate": 1.00,
+          "copay_primary": 20.00,
+          "pre_auth_required": false
+        }
+      },
+      "deductible": {
+        "annual_amount": 1500.00,
+        "amount_met": 1500.00,
+        "remaining": 0.00,
+        "status": "fully_met"
+      },
+      "out_of_pocket_max": {
+        "annual_amount": 6000.00,
+        "amount_spent": 2100.00,
+        "remaining": 3900.00
+      }
+    }
+  },
+  "care_history": {
+    "PAT-2847": [
+      {
+        "visit_id": "VISIT-4421",
+        "date": "2026-01-15",
+        "provider": "Dr. Raj Patel, MD",
+        "department": "Cardiology",
+        "facility": "MidAtlantic Health — Main Campus",
+        "type": "Office Visit",
+        "diagnosis": ["Essential hypertension", "Annual cardiovascular evaluation"],
+        "procedure_codes": ["99214"],
+        "notes": "Routine cardiology follow-up. BP well controlled on current medication. EKG normal. Continue current regimen. Follow up in 6 months."
+      },
+      {
+        "visit_id": "VISIT-4103",
+        "date": "2025-10-08",
+        "provider": "Dr. Sarah Kim, MD",
+        "department": "Internal Medicine",
+        "facility": "MidAtlantic Health — Main Campus",
+        "type": "Annual Physical",
+        "diagnosis": ["Annual wellness visit", "Essential hypertension — controlled"],
+        "procedure_codes": ["99395"],
+        "notes": "Annual physical. All labs within normal limits. Referred to cardiology for routine follow-up."
+      }
+    ]
+  },
+  "cases": {
+    "PAT-2847": []
+  }
+}

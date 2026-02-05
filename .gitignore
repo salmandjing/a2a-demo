@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+.bedrock_agentcore.yaml
+*.egg-info/
+dist/
+build/
+.pytest_cache/
