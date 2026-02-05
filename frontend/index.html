@@ -3,213 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MidAtlantic Health - Virtual Assistant</title>
+    <title>MidAtlantic Health - AI Assistant</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="layout">
-        <!-- Main Chat Area -->
-        <div class="app-container">
-            <!-- Header -->
-            <header class="header">
-                <div class="logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                        <circle cx="16" cy="16" r="14" stroke="#0066cc" stroke-width="2" fill="#e6f0ff"/>
-                        <path d="M16 8v16M8 16h16" stroke="#0066cc" stroke-width="2.5" stroke-linecap="round"/>
-                    </svg>
-                    <span>MidAtlantic Health</span>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">MidAtlantic</span>
+                        <span class="brand-tagline">Health System</span>
+                    </div>
                 </div>
-                <div class="header-subtitle">Virtual Patient Assistant</div>
-            </header>
+            </div>
 
-            <!-- Chat Container -->
-            <main class="chat-container">
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-label">Quick Actions</div>
+                    <button class="nav-item active" data-message="Hi, I'm Maria Santos and my patient ID is PAT-2847. I just got a bill for $2,400 for my cardiology visit with Dr. Patel on January 15th. This seems way too high - I have good insurance through Blue Cross. Can you look into this?">
+                        <span class="nav-icon">💳</span>
+                        <span class="nav-text">Billing Dispute</span>
+                        <span class="nav-badge">Demo</span>
+                    </button>
+                    <button class="nav-item" data-message="Yes, please fix the billing error for patient PAT-2847 and make sure my insurance gets charged correctly. I want this resolved.">
+                        <span class="nav-icon">✅</span>
+                        <span class="nav-text">Approve Correction</span>
+                    </button>
+                    <button class="nav-item" data-message="Hi, I'm patient PAT-2847. Can you tell me about my insurance coverage and deductible status?">
+                        <span class="nav-icon">🛡️</span>
+                        <span class="nav-text">Check Coverage</span>
+                    </button>
+                    <button class="nav-item" data-message="Hi, I'm patient PAT-2847. I'd like to schedule a follow-up cardiology appointment with Dr. Patel.">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-text">Book Appointment</span>
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-label">Test Scenarios</div>
+                    <button class="nav-item warning" data-message="Hi, I'm patient PAT-9999. Can you look up my billing information?">
+                        <span class="nav-icon">⚠️</span>
+                        <span class="nav-text">Unknown Patient</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="reset-btn" id="resetButton">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset Conversation
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Chat Area -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <h1>Virtual Health Assistant</h1>
+                        <p>Powered by multi-agent AI</p>
+                    </div>
+                    <div class="chat-status" id="chatStatus">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Ready</span>
+                    </div>
+                </div>
+
                 <div class="chat-messages" id="chatMessages">
-                    <!-- Welcome message -->
                     <div class="message assistant">
                         <div class="message-avatar">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" fill="#0066cc"/>
-                                <path d="M12 6v12M6 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                             </svg>
                         </div>
                         <div class="message-content">
-                            <p>Hello! I'm your MidAtlantic Health virtual assistant. I can help you with:</p>
-                            <ul>
-                                <li>Billing questions and disputes</li>
-                                <li>Insurance verification</li>
-                                <li>Appointment scheduling</li>
-                            </ul>
-                            <p>How can I assist you today?</p>
+                            <div class="message-header">Health Assistant</div>
+                            <div class="message-text">
+                                <p>Hello! I'm your MidAtlantic Health virtual assistant. I can help you with:</p>
+                                <ul>
+                                    <li><strong>Billing questions</strong> - Review charges, dispute errors, request corrections</li>
+                                    <li><strong>Insurance verification</strong> - Check coverage, deductibles, and benefits</li>
+                                    <li><strong>Appointments</strong> - Schedule, reschedule, or cancel visits</li>
+                                </ul>
+                                <p>How can I assist you today?</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Typing indicator -->
-                <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                    <div class="message assistant">
-                        <div class="message-avatar">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" fill="#0066cc"/>
-                                <path d="M12 6v12M6 12h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="Describe your healthcare question..." rows="1"></textarea>
+                        <button id="sendButton" class="send-btn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                             </svg>
-                        </div>
-                        <div class="message-content typing">
-                            <span class="dot"></span>
-                            <span class="dot"></span>
-                            <span class="dot"></span>
-                        </div>
+                        </button>
                     </div>
                 </div>
-            </main>
+            </div>
 
-            <!-- Input Area -->
-            <footer class="input-area">
-                <div class="input-container">
-                    <textarea
-                        id="messageInput"
-                        placeholder="Type your message here..."
-                        rows="1"
-                        autofocus
-                    ></textarea>
-                    <button id="sendButton" class="send-button" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Trace Panel -->
+            <div class="trace-panel">
+                <div class="trace-header">
+                    <div class="trace-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20V10M18 20V4M6 20v-4"/>
                         </svg>
-                    </button>
+                        <span>Agent Activity</span>
+                    </div>
+                    <div class="trace-actions">
+                        <button class="trace-action" id="jsonToggle" title="View JSON">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="input-hint">
-                    Try: "My patient ID is PAT-2847. I received a bill for $2,400 from a cardiology visit."
-                </div>
-            </footer>
-        </div>
 
-        <!-- Trace Panel -->
-        <div class="trace-panel" id="tracePanel">
-            <div class="trace-header">
-                <div class="trace-title">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 20V10M18 20V4M6 20v-4"/>
-                    </svg>
-                    Agent Activity
-                </div>
-                <div class="trace-controls">
-                    <button class="trace-toggle" id="jsonToggle" title="Toggle JSON view">{ }</button>
-                    <div class="trace-badge" id="traceBadge">Ready</div>
-                </div>
-            </div>
-
-            <div class="trace-content" id="traceContent">
-                <div class="trace-empty">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    <p>Agent activity will stream here in real-time</p>
-                </div>
-            </div>
-
-            <!-- Metrics Panel -->
-            <div class="metrics-panel" id="metricsPanel" style="display: none;">
-                <div class="metrics-grid">
-                    <div class="metric-item">
-                        <div class="metric-icon">⏱️</div>
-                        <div class="metric-content">
-                            <div class="metric-value" id="metricTime">--</div>
-                            <div class="metric-label">Total Time</div>
+                <div class="trace-body">
+                    <!-- Architecture Visualization -->
+                    <div class="arch-viz">
+                        <div class="arch-node orchestrator" id="archOrchestrator">
+                            <div class="arch-pulse"></div>
+                            <span class="arch-label">Orchestrator</span>
+                        </div>
+                        <div class="arch-connectors">
+                            <div class="arch-connector left" id="archLine1"></div>
+                            <div class="arch-connector right" id="archLine2"></div>
+                        </div>
+                        <div class="arch-agents">
+                            <div class="arch-node servicenow" id="archServicenow">
+                                <div class="arch-pulse"></div>
+                                <span class="arch-label">ServiceNow</span>
+                                <span class="arch-sub">Billing</span>
+                            </div>
+                            <div class="arch-node salesforce" id="archSalesforce">
+                                <div class="arch-pulse"></div>
+                                <span class="arch-label">Salesforce</span>
+                                <span class="arch-sub">Patient Data</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="metric-item">
-                        <div class="metric-icon">🔤</div>
-                        <div class="metric-content">
-                            <div class="metric-value" id="metricTokens">--</div>
-                            <div class="metric-label">Tokens</div>
-                        </div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-icon">💰</div>
-                        <div class="metric-content">
-                            <div class="metric-value" id="metricCost">--</div>
-                            <div class="metric-label">Est. Cost</div>
+
+                    <!-- Trace Events -->
+                    <div class="trace-events" id="traceContent">
+                        <div class="trace-empty">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            <p>Agent activity will appear here</p>
                         </div>
                     </div>
                 </div>
-                <div class="timing-breakdown" id="timingBreakdown"></div>
-            </div>
 
-            <!-- Architecture Diagram -->
-            <div class="architecture-section">
-                <div class="arch-title">Architecture</div>
-                <div class="arch-diagram">
-                    <div class="arch-node orchestrator" id="archOrchestrator">
-                        <div class="arch-icon">🎯</div>
-                        <div class="arch-label">Orchestrator</div>
+                <!-- Metrics -->
+                <div class="metrics-bar" id="metricsPanel" style="display: none;">
+                    <div class="metric">
+                        <span class="metric-value" id="metricTime">--</span>
+                        <span class="metric-label">Duration</span>
                     </div>
-                    <div class="arch-connections">
-                        <div class="arch-line" id="archLine1"></div>
-                        <div class="arch-line" id="archLine2"></div>
+                    <div class="metric">
+                        <span class="metric-value" id="metricTokens">--</span>
+                        <span class="metric-label">Tokens</span>
                     </div>
-                    <div class="arch-agents">
-                        <div class="arch-node servicenow" id="archServicenow">
-                            <div class="arch-icon">🔧</div>
-                            <div class="arch-label">ServiceNow</div>
-                            <div class="arch-desc">Billing & Tickets</div>
-                        </div>
-                        <div class="arch-node salesforce" id="archSalesforce">
-                            <div class="arch-icon">👤</div>
-                            <div class="arch-label">Salesforce</div>
-                            <div class="arch-desc">Patient & Insurance</div>
-                        </div>
+                    <div class="metric">
+                        <span class="metric-value" id="metricCost">--</span>
+                        <span class="metric-label">Cost</span>
                     </div>
+                    <div class="timing-bar" id="timingBar"></div>
                 </div>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <!-- Demo Panel -->
-        <div class="demo-panel">
-            <div class="demo-header">
-                <div class="demo-title">Demo Scenarios</div>
-                <button class="reset-button" id="resetButton" title="Reset conversation">
-                    ↻ Reset
-                </button>
+    <!-- JSON Modal -->
+    <div class="modal" id="jsonModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Raw Trace Data</span>
+                <button class="modal-close" id="jsonModalClose">&times;</button>
             </div>
-            <div class="demo-step">Step 1: Start here</div>
-            <button class="demo-button primary" data-message="Hi, I'm Maria Santos and my patient ID is PAT-2847. I just got a bill for $2,400 for my cardiology visit with Dr. Patel on January 15th. This seems way too high - I have good insurance through Blue Cross. Can you look into this?">
-                🎯 Billing Dispute
-            </button>
-            <div class="demo-step">Step 2: After investigation</div>
-            <button class="demo-button" data-message="Yes, please fix the billing error for patient PAT-2847 and make sure my insurance gets charged correctly. I want this resolved.">
-                ✅ Approve Fix
-            </button>
-            <div class="demo-step">Other scenarios</div>
-            <button class="demo-button" data-message="Hi, I'm patient PAT-2847. Can you tell me about my insurance coverage and deductible status? I want to understand what I'll owe for future visits.">
-                🔍 Insurance Details
-            </button>
-            <button class="demo-button" data-message="Hi, I'm patient PAT-2847. I'd like to schedule a follow-up cardiology appointment with Dr. Patel please.">
-                📅 Book Appointment
-            </button>
-            <div class="demo-step">Error handling</div>
-            <button class="demo-button error-demo" data-message="Hi, I'm patient PAT-9999. Can you look up my billing information?">
-                ⚠️ Unknown Patient
-            </button>
+            <pre class="modal-body" id="jsonContent"></pre>
         </div>
     </div>
 
-    <!-- Visual Data Card Modal -->
-    <div class="card-modal" id="cardModal" style="display: none;">
-        <div class="card-modal-content" id="cardModalContent"></div>
-        <button class="card-modal-close" id="cardModalClose">×</button>
-    </div>
-
-    <!-- JSON View Modal -->
-    <div class="json-modal" id="jsonModal" style="display: none;">
-        <div class="json-modal-header">
-            <span>Raw JSON View</span>
-            <button class="json-modal-close" id="jsonModalClose">×</button>
+    <!-- Typing Indicator Template -->
+    <template id="typingTemplate">
+        <div class="message assistant typing-message">
+            <div class="message-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+            </div>
+            <div class="message-content">
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
         </div>
-        <pre class="json-content" id="jsonContent"></pre>
-    </div>
+    </template>
 
     <script src="/static/app.js"></script>
 </body>
