@@ -1,6 +1,6 @@
-# Multi-Agent Healthcare CX Demo
+# Agent 2 Agent Healthcare Demo
 
-A production-grade demonstration of **multi-agent AI orchestration** for healthcare customer experience. Three specialized AI agents collaborate in real-time to resolve patient billing disputes, verify insurance, and manage cases.
+A demonstration of **multi-agent AI orchestration** for healthcare customer experience. Three specialized AI agents collaborate in real-time to resolve patient billing disputes, verify insurance, and manage cases.
 
 ![Demo Screenshot](https://img.shields.io/badge/status-working-brightgreen) ![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue) ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
